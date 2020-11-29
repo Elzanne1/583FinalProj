@@ -64,13 +64,14 @@ h1,h2{
 #visual_container{
     display: inline-block;
     float:right;
-    width: 87%;
+    width: 100%;
 }
 
 .LABEL{
-    padding-top:5%;
-    padding-bottom:5%;
-    padding-right: 1%;
+    /*padding-top:5%;*/
+    /*padding-bottom:5%;*/
+    /*padding-right: 1%;*/
+    overflow: hidden;
 }
 
 .countryDivs{
@@ -87,6 +88,11 @@ h1,h2{
     /*padding-top:5%;*/
     /*padding-bottom:5%;*/
     /*viewBox: 0 0 50 200;*/
+}
+
+.country{
+    padding-top:0.15%;
+    padding-bottom:0.15%;
 }
 
 

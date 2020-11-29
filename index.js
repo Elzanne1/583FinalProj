@@ -2,133 +2,173 @@
 // DEFAULT state
 let vis = 'life_expectancy';
 
-Promise.all([d3.json('countries.json'), d3.csv('Life Expectancy Data fixed.csv')])
-    .then(([jsonData, csvData]) => {
+function start(){
+    Promise.all([d3.json('countries.json'), d3.csv('Life Expectancy Data fixed.csv')])
+        .then(([jsonData, csvData]) => {
 
-        //SET UP
-        //setDoubleScroll();
+            d3.selectAll('.country').remove();
 
-        //Combining jsonData and csvData
-        let data = getCountryImageInfo(jsonData, csvData);
+            //SET UP
+            //setDoubleScroll();
 
-        //console.log(data);
+            //Combining jsonData and csvData
+            let data = getCountryImageInfo(jsonData, csvData);
 
-        let life_expect_arr = [];
-        let bmi_arr = [];
-        let gdp_arr = [];
-        let income_arr = [];
-        let schooling_arr = [];
+            //console.log(data);
 
-        data.forEach(function(d){
-            life_expect_arr.push(parseFloat(d['life_expectancy']));
-            bmi_arr.push(parseFloat(d['bmi']));
-            gdp_arr.push(parseFloat(d['gdp']));
-            income_arr.push(parseFloat(d['income_resources']));
-            schooling_arr.push(parseFloat(d['schooling']));
-        })
+            let life_expect_arr = [];
+            let bmi_arr = [];
+            let gdp_arr = [];
+            let income_arr = [];
+            let schooling_arr = [];
 
-        let life_extent = d3.extent(life_expect_arr);
-        let bmi_extent = d3.extent(bmi_arr);
-        let gdp_extent = d3.extent(gdp_arr);
-        let income_extent = d3.extent(income_arr);
-        let schooling_extent = d3.extent(schooling_arr);
+            data.forEach(function(d){
+                life_expect_arr.push(parseFloat(d['life_expectancy']));
+                bmi_arr.push(parseFloat(d['bmi']));
+                gdp_arr.push(parseFloat(d['gdp']));
+                income_arr.push(parseFloat(d['income_resources']));
+                schooling_arr.push(parseFloat(d['schooling']));
+            })
 
-        console.log(life_extent, bmi_extent, gdp_extent, income_extent, schooling_extent);
+            let life_extent = d3.extent(life_expect_arr);
+            let bmi_extent = d3.extent(bmi_arr);
+            let gdp_extent = d3.extent(gdp_arr);
+            let income_extent = d3.extent(income_arr);
+            let schooling_extent = d3.extent(schooling_arr);
 
-        let lifeScale = d3.scaleLinear()
-            .domain(life_extent)
-            .range([20,1900])
-          //  .nice();
+            console.log(life_extent, bmi_extent, gdp_extent, income_extent, schooling_extent);
 
-        let bmiScale = d3.scaleLinear()
-            .domain(bmi_extent)
-            .range([20,1900])
-          //  .nice();
+            //Data setup
+            let countryDivs = setUp(data);
+            let start = document.querySelector('.countryDivs').clientWidth * 0.03;
+            let end = document.querySelector('.countryDivs').clientWidth * 0.97;
 
-        let gdpScale = d3.scaleLinear()
-            .domain(gdp_extent)
-            .range([20,1900])
-           // .nice();
+            let lifeScale = d3.scaleLinear()
+                .domain(life_extent)
+                .range([start,end])
+            //  .nice();
 
-        let incomeScale = d3.scaleLinear()
-            .domain(income_extent)
-            .range([20,1900])
-           // .nice();
+            let bmiScale = d3.scaleLinear()
+                .domain(bmi_extent)
+                .range([start,end])
+            //  .nice();
 
-        let schoolScale = d3.scaleLinear()
-            .domain(schooling_extent)
-            .range([20,1900])
+            let gdpScale = d3.scaleLinear()
+                .domain(gdp_extent)
+                .range([start,end])
+            // .nice();
+
+            let incomeScale = d3.scaleLinear()
+                .domain(income_extent)
+                .range([start,end])
+            // .nice();
+
+            let schoolScale = d3.scaleLinear()
+                .domain(schooling_extent)
+                .range([start,end])
             //.nice();
 
-        //Data setup
-        let countrySVGs = setUp(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+            let countrySVGs = setSVGs(countryDivs,lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
 
-       // updateDataState(data);
+            // updateDataState(data);
 
-        setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale, countrySVGs);
 
-    });
+            setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale, countrySVGs);
+
+
+
+        });
+}
+
+start();
+window.onresize = start;
 
 /**
  * Set up visualization container and the country names and lines within an svg tag.
  * @param data - combination of jsonData and csvData
  */
-function setUp(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale){
+function setUp(data){
          //SETUP of document
 
-        let countryName = d3.select("#country_names").selectAll('div').append('div')
+        let countryName = d3.select("#visual_container").selectAll('div').append('div')
             .data(data)
             .enter()
             .append('div')
+            .attr('class', 'row country')
+            .append('div')
             .attr('class', function(d){
-                return `LABEL ${d['name']}`;
+                return `LABEL ${d['name']} col-xs-1`;
             } )
             .text(function(d){
                 return d['name'];
-            });
+            })
+            .style('vertical-align', 'middle');
 
-         let countryDivs = d3.select('#visual_container').selectAll('div').append('div')
-             .data(data)
-             .enter()
+         let countryDivs = d3.select('#visual_container').selectAll('.country')
              .append('div')
-             .attr('class', 'countryDivs')
+             .attr('class', 'countryDivs col-xs-11')
 
+        return countryDivs;
+}
 
-        let countrySVGs = countryDivs
-            .append('svg')
-            .attr('class', 'countrySVGs')
-            .attr('xmlns', 'http://www.w3.org/2000/svg')
+function setSVGs(countryDivs, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale){
+    let countrySVGs = countryDivs
+        .append('svg')
+        .attr('class', 'countrySVGs')
+        .attr('xmlns', 'http://www.w3.org/2000/svg')
 
-        let lines = countrySVGs
-            .append('line')
-            .attr('stroke', 'black')
-            .attr('x1', '0')
-            .attr('x2', '2000')
-            .attr('y1', '20')
-            .attr('y2', '20')
+    let lines = countrySVGs
+        .append('line')
+        .attr('stroke', 'black')
+        .attr('x1', '0')
+        .attr('x2', function(d){
+            return document.querySelector('.countryDivs').clientWidth;
+        })
+        .attr('y1', function(d){
+            return document.querySelector('.countryDivs').clientHeight/4;
+        })
+        .attr('y2', function(d){
+            return document.querySelector('.countryDivs').clientHeight/4;
+        })
 
-        let vertStartLine = countrySVGs
-            .append('line')
-            .attr('stroke', 'black')
-            .attr('x1', '20')
-            .attr('x2', '20')
-            .attr('y1', '15')
-            .attr('y2', '25')
+    let vertStartLine = countrySVGs
+        .append('line')
+        .attr('stroke', 'black')
+        .attr('x1', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.03;
+        })
+        .attr('x2', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.03;
+        })
+        .attr('y1', function(d){
+            return this.parentElement.clientHeight * 0.1;
+        })
+        .attr('y2', function(d){
 
-        let vertEndLine = countrySVGs
-            .append('line')
-            .attr('stroke', 'black')
-            .attr('x1', '1900')
-            .attr('x2', '1900')
-            .attr('y1', '15')
-            .attr('y2', '25')
+            return this.parentElement.clientHeight * 0.4;
 
-        let scale = getScale(lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+        })
 
-         showData(countrySVGs, scale );
-         return countrySVGs;
+    let vertEndLine = countrySVGs
+        .append('line')
+        .attr('stroke', 'black')
+        .attr('x1', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.97;
+        })
+        .attr('x2', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.97;
+        })
+        .attr('y1', function(d){
+            return this.parentElement.clientHeight * 0.1;
+        })
+        .attr('y2',  function(d){
+            return this.parentElement.clientHeight * 0.4;
+        })
 
+    let scale = getScale(lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
 
+    showData(countrySVGs, scale );
+    return countrySVGs;
 }
 
 function showData(countrySVGs, scale){
@@ -142,22 +182,29 @@ function showData(countrySVGs, scale){
         .attr('href', function(d){
             return d['location']
         })
-        .attr('width', '2em')
-        .attr('height', '2em')
+        .attr('width', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.02;
+        })
+        .attr('height', function(){
+            return document.querySelector('.countryDivs').clientHeight * 0.7;
+        })
         .attr('x', function(d){
             return scale(d[vis]);
         })
-        .attr('y', '5')
 
     let values = countrySVGs
         .append('text')
         .attr('y', '5')
         .attr('font-weight', 'bold')
-        .attr('font-size', '0.75em')
-        .attr('x', function(d){
-            return scale(d[vis]) - 20;
+        .attr('font-size', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.004;
         })
-        .attr('dy', '0.29em')
+        .attr('x', function(d){
+            return scale(d[vis]) - 25;
+        })
+        .attr('dy', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.001;
+        })
         .text(function(d){
             let num = Number(d[vis]);
             return String(num.toFixed(3));

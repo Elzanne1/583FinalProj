@@ -46,7 +46,7 @@ function start(){
             //Data setup
             let countryDivs = setUp(data);
             let start = document.querySelector('.countryDivs').clientWidth * 0.03;
-            let end = document.querySelector('.countryDivs').clientWidth * 0.97;
+            let end = document.querySelector('.countryDivs').clientWidth * 0.88;
 
 
             let lifeScale = d3.scaleLinear()
@@ -184,10 +184,10 @@ function setSVGs(countryDivs, lifeScale, bmiScale, gdpScale, incomeScale, school
         .attr('class', 'end_line')
         .attr('stroke', 'black')
         .attr('x1', function(){
-            return document.querySelector('.countryDivs').clientWidth * 0.97;
+            return document.querySelector('.countryDivs').clientWidth *  0.88;
         })
         .attr('x2', function(){
-            return document.querySelector('.countryDivs').clientWidth * 0.97;
+            return document.querySelector('.countryDivs').clientWidth *  0.88;
         })
         .attr('y1', function(d){
             return this.parentElement.clientHeight * 0.1;
@@ -199,16 +199,21 @@ function setSVGs(countryDivs, lifeScale, bmiScale, gdpScale, incomeScale, school
     let scale = getScale(lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
     let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
     showData(countrySVGs, scale );
-    showNumbers(countrySVGs, scale, colorScale);
+    showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+    showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+    showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+    showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+    showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
+
 
     return countrySVGs;
 }
 
-function showNumbers(countrySVGs,scale,  colorScale){
+function showNumbers(countrySVGs, scale, colorScale, selection, i){
     let values = countrySVGs
         .append('text')
         .attr('fill', function(d){
-            return colorScale(d[vis]);
+            return colorScale(d[selection]);
         })
         .attr('y', function(){
             return document.querySelector('.countryDivs').clientWidth * 0.025;
@@ -218,13 +223,13 @@ function showNumbers(countrySVGs,scale,  colorScale){
             return document.querySelector('.countryDivs').clientWidth * 0.006;
         })
         .attr('x', function(d){
-            return scale(d[vis]) - document.querySelector('.countryDivs').clientWidth * 0.025;
+            return scale(d[vis]) - document.querySelector('.countryDivs').clientWidth * 0.03 + (document.querySelector('.countryDivs').clientWidth * 0.03) * i;
         })
         .attr('dy', function(){
             return document.querySelector('.countryDivs').clientWidth * 0.001;
         })
         .text(function(d){
-            let num = Number(d[vis]);
+            let num = Number(d[selection]);
             return String(num.toFixed(3));
         });
 }
@@ -338,7 +343,11 @@ function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScal
         // })
         let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
 
-        showNumbers(countrySVGs, scale, colorScale);
+        showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+        showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+        showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+        showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+        showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
 
     }
 
@@ -348,7 +357,11 @@ function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScal
         let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
         let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
         showData(countrySVGs, scale);
-        showNumbers(countrySVGs, scale, colorScale);
+        showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+        showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+        showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+        showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+        showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
 
     }
 
@@ -358,7 +371,11 @@ function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScal
         let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
         let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
         showData(countrySVGs, scale);
-        showNumbers(countrySVGs, scale, colorScale);
+        showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+        showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+        showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+        showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+        showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
 
     }
 
@@ -368,7 +385,11 @@ function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScal
         let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
         let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
         showData(countrySVGs, scale);
-        showNumbers(countrySVGs, scale, colorScale);
+        showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+        showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+        showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+        showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+        showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
 
     }
     
@@ -378,7 +399,11 @@ function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScal
         let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
         let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
         showData(countrySVGs, scale);
-        showNumbers(countrySVGs, scale, colorScale);
+        showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+        showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+        showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+        showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+        showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
     }
 }
 

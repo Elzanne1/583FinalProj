@@ -38,7 +38,7 @@ h3{
     overflow-y:hidden;
 }
 h4{
-    padding-bottom: 5%;
+    padding-bottom: 2%;
 }
 
 .legendLabel{
@@ -73,6 +73,7 @@ h1,h2{
     display: inline-block;
     float:right;
     padding-top:4%;
+    padding-bottom: 4%;
     width: 100%;
 }
 

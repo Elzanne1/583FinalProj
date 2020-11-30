@@ -21,30 +21,118 @@
 		</div>
 
 		<div class = "row d-flex" id="button_row" >
+			<div class = "col-xs-1 text-right">
+				<p>Order Flags By: </p>
+			</div>
 			<div class = "col-xs-2 text-center">
 				<button id = "LE" class = "btn btn-primary">Life Expectancy Data</button>
 			</div>
 
-			<div class = "col-xs-2 text-center">
+			<div class = "col-xs-1 text-center">
 				<button id = "BMI" class = "btn btn-primary">BMI Data</button>
 			</div>
 
-			<div class = "col-xs-2 text-center">
+			<div class = "col-xs-1 text-center">
 				<button id = "GDP" class = "btn btn-primary">GDP Data</button>
 			</div>
 
-			<div class = "col-xs-4 text-center">
+			<div class = "col-xs-3 text-center">
 				<button id = "IC" class = "btn btn-primary">Income Composition of Resources Data</button>
 			</div>
 
-			<div class = "col-xs-2 text-center">
+			<div class = "col-xs-1 text-center">
 				<button id = "S" class = "btn btn-primary">Schooling Data</button>
 			</div>
 
 		</div>
 
-		<div>
+		<div class="row">
 			<h3 id = "info"></h3>
+			<h4 style="text-align:center;"> The left edge of every flag represents the position of the value. The numbers are shown in the following order [Life Expectancy, BMI, GDP, Income Composition of Resources, Schooling].</h4>
+			<div id = "legend" class = "container">
+				<div class = "row">
+					<h5 class = "col-xs-2" style="font-weight:bold;">Legend</h5>
+					<h5  class = "col-xs-2"  style="font-weight:bold;">Value is between 0-24% of all others</h5>
+					<h5  class = "col-xs-2"  style="font-weight:bold;">Value is between 25-49% of all others</h5>
+					<h5  class = "col-xs-2" style="font-weight:bold;">Value is between 50-74% of all others</h5>
+					<h5  class = "col-xs-2" style="font-weight:bold;">Value is between 75-100% of all others</h5>
+				</div>
+				<div class = "row">
+					<div class = "col-xs-2 legendLabel" id = "legendLE">Life Expectancy</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#00ceff; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#07a0ce; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#06749d; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#004c6d; width:2em; height:2em"></div>
+					</div>
+				</div>
+				<div class = "row">
+					<div class = "col-xs-2 legendLabel"  id = "legendBMI">BMI</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#ff7aff; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#cd55c9; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#9c3196; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#6d0967; width:2em; height:2em"></div>
+					</div>
+				</div>
+				<div class = "row">
+					<div class = "col-xs-2 legendLabel"  id = "legendGDP">GDP</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#5cd135; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#4bae2a; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#3b8d1f; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#2b6d15; width:2em; height:2em"></div>
+					</div>
+				</div>
+				<div class = "row">
+					<div class = "col-xs-2 legendLabel"  id = "legendIC">Income Composition of Resources</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#ff785c; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#cc543e; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#9c3223; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#6d0d07; width:2em; height:2em"></div>
+					</div>
+				</div>
+				<div class = "row">
+					<div class = "col-xs-2 legendLabel"  id = "legendS">Schooling</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#c2be00; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#a5a01d; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#898427; width:2em; height:2em"></div>
+					</div>
+					<div class = "col-xs-2">
+						<div style="background-color:#6d682b; width:2em; height:2em"></div>
+					</div>
+				</div>
+			</div>
 		</div>
 
 

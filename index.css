@@ -37,6 +37,14 @@ h3{
     overflow-x:scroll;
     overflow-y:hidden;
 }
+h4{
+    padding-bottom: 5%;
+}
+
+.legendLabel{
+    padding-top:0.5%;
+    padding-bottom:0.5%;
+}
 
 /*#vis_container{*/
 /*    padding-top: 2%;*/
@@ -64,6 +72,7 @@ h1,h2{
 #visual_container{
     display: inline-block;
     float:right;
+    padding-top:4%;
     width: 100%;
 }
 

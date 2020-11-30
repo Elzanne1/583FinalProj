@@ -8,13 +8,18 @@ function start(){
 
             d3.selectAll('.country').remove();
 
+
             //SET UP
             //setDoubleScroll();
 
             //Combining jsonData and csvData
             let data = getCountryImageInfo(jsonData, csvData);
 
-            //console.log(data);
+            let orderedLE = sortingVals(data, 'life_expectancy');
+            let orderedBMI = sortingVals(data, 'bmi');
+            let orderedGDP = sortingVals(data, 'gdp');
+            let orderedIC = sortingVals(data, 'income_resources');
+            let orderedS = sortingVals(data, 'schooling');
 
             let life_expect_arr = [];
             let bmi_arr = [];
@@ -36,12 +41,13 @@ function start(){
             let income_extent = d3.extent(income_arr);
             let schooling_extent = d3.extent(schooling_arr);
 
-            console.log(life_extent, bmi_extent, gdp_extent, income_extent, schooling_extent);
+            //console.log(life_extent, bmi_extent, gdp_extent, income_extent, schooling_extent);
 
             //Data setup
             let countryDivs = setUp(data);
             let start = document.querySelector('.countryDivs').clientWidth * 0.03;
             let end = document.querySelector('.countryDivs').clientWidth * 0.97;
+
 
             let lifeScale = d3.scaleLinear()
                 .domain(life_extent)
@@ -68,12 +74,35 @@ function start(){
                 .range([start,end])
             //.nice();
 
-            let countrySVGs = setSVGs(countryDivs,lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+            let lePercentiles = calculatePercentiles(orderedLE);
+            let bmiPercentiles = calculatePercentiles(orderedBMI);
+            let gdpPercentiles = calculatePercentiles(orderedGDP);
+            let incomePercentiles = calculatePercentiles(orderedIC);
+            let schoolPercentiles = calculatePercentiles(orderedS);
 
-            // updateDataState(data);
+            let leColor = d3.scaleThreshold()
+                .domain([Number(orderedLE[lePercentiles['25']]['life_expectancy']), Number(orderedLE[lePercentiles['50']]['life_expectancy']), Number(orderedLE[lePercentiles['75']]['life_expectancy']), life_extent[1]])
+                .range(['#00ceff', '#07a0ce','#06749d', '#004c6d']);
+
+            let bmiColor = d3.scaleThreshold()
+                .domain([Number(orderedBMI[bmiPercentiles['25']]['bmi']), Number(orderedBMI[bmiPercentiles['50']]['bmi']), Number(orderedBMI[bmiPercentiles['75']]['bmi']), bmi_extent[1]])
+                .range(['#ff7aff', '#cd55c9','#9c3196', '#6d0967']);
+            let gdpColor = d3.scaleThreshold()
+                .domain([Number(orderedGDP[gdpPercentiles['25']]['gdp']), Number(orderedGDP[gdpPercentiles['50']]['gdp']), Number(orderedGDP[gdpPercentiles['75']]['gdp']), gdp_extent[1]])
+                .range(['#5cd135', '#4bae2a','#3b8d1f', '#2b6d15']);
+
+            let incomeColor = d3.scaleThreshold()
+                .domain([Number(orderedIC[incomePercentiles['25']]['income_resources']), Number(orderedIC[incomePercentiles['50']]['income_resources']), Number(orderedIC[incomePercentiles['75']]['income_resources']), income_extent[1]])
+                .range(['#ff785c', '#cc543e','#9c3223', '#6d0d07']);
+
+            let schoolColor = d3.scaleThreshold()
+                .domain([Number(orderedS[schoolPercentiles['25']]['schooling']), Number(orderedS[schoolPercentiles['50']]['schooling']), Number(orderedS[schoolPercentiles['75']]['schooling']), schooling_extent[1]])
+                .range(['#c2be00', '#a5a01d','#898427', '#6d682b']);
 
 
-            setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale, countrySVGs);
+            let countrySVGs = setSVGs(countryDivs,lifeScale, bmiScale, gdpScale, incomeScale, schoolScale,leColor, bmiColor, gdpColor, incomeColor, schoolColor)
+
+            setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale, countrySVGs ,leColor, bmiColor, gdpColor, incomeColor, schoolColor);
 
 
 
@@ -111,7 +140,7 @@ function setUp(data){
         return countryDivs;
 }
 
-function setSVGs(countryDivs, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale){
+function setSVGs(countryDivs, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale,leColor, bmiColor, gdpColor, incomeColor, schoolColor){
     let countrySVGs = countryDivs
         .append('svg')
         .attr('class', 'countrySVGs')
@@ -133,6 +162,7 @@ function setSVGs(countryDivs, lifeScale, bmiScale, gdpScale, incomeScale, school
 
     let vertStartLine = countrySVGs
         .append('line')
+        .attr('class', 'start_line')
         .attr('stroke', 'black')
         .attr('x1', function(){
             return document.querySelector('.countryDivs').clientWidth * 0.03;
@@ -151,6 +181,7 @@ function setSVGs(countryDivs, lifeScale, bmiScale, gdpScale, incomeScale, school
 
     let vertEndLine = countrySVGs
         .append('line')
+        .attr('class', 'end_line')
         .attr('stroke', 'black')
         .attr('x1', function(){
             return document.querySelector('.countryDivs').clientWidth * 0.97;
@@ -166,14 +197,41 @@ function setSVGs(countryDivs, lifeScale, bmiScale, gdpScale, incomeScale, school
         })
 
     let scale = getScale(lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
-
+    let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
     showData(countrySVGs, scale );
+    showNumbers(countrySVGs, scale, colorScale);
+
     return countrySVGs;
+}
+
+function showNumbers(countrySVGs,scale,  colorScale){
+    let values = countrySVGs
+        .append('text')
+        .attr('fill', function(d){
+            return colorScale(d[vis]);
+        })
+        .attr('y', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.025;
+        })
+        .attr('font-weight', 'bold')
+        .attr('font-size', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.006;
+        })
+        .attr('x', function(d){
+            return scale(d[vis]) - document.querySelector('.countryDivs').clientWidth * 0.025;
+        })
+        .attr('dy', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.001;
+        })
+        .text(function(d){
+            let num = Number(d[vis]);
+            return String(num.toFixed(3));
+        });
 }
 
 function showData(countrySVGs, scale){
     let info = document.querySelector('#info');
-    info.textContent = `Currently Showing: ${translateCoding(vis)}`;
+    info.textContent = `Flags Ordered By: ${translateCoding(vis)}`;
     countrySVGs.selectAll('image').remove();
     countrySVGs.selectAll('text').remove();
 
@@ -192,23 +250,6 @@ function showData(countrySVGs, scale){
             return scale(d[vis]);
         })
 
-    let values = countrySVGs
-        .append('text')
-        .attr('y', '5')
-        .attr('font-weight', 'bold')
-        .attr('font-size', function(){
-            return document.querySelector('.countryDivs').clientWidth * 0.004;
-        })
-        .attr('x', function(d){
-            return scale(d[vis]) - 25;
-        })
-        .attr('dy', function(){
-            return document.querySelector('.countryDivs').clientWidth * 0.001;
-        })
-        .text(function(d){
-            let num = Number(d[vis]);
-            return String(num.toFixed(3));
-        });
 }
 
 function getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale){
@@ -229,6 +270,27 @@ function getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale){
 
     else if (vis === 'schooling'){
         return schoolScale;
+    }
+}
+
+function getColorScale( leColor, bmiColor, gdpColor, incomeColor, schoolColor){
+    if (vis === 'life_expectancy'){
+        return leColor;
+    }
+    else if (vis === 'bmi'){
+        return bmiColor;
+    }
+
+    else if (vis === 'gdp'){
+        return gdpColor;
+    }
+
+    else if (vis === 'income_resources'){
+        return incomeColor;
+    }
+
+    else if (vis === 'schooling'){
+        return schoolColor;
     }
 }
 
@@ -263,13 +325,20 @@ function getCountryImageInfo(jsonData, csvData){
  * Sets up functionality of buttons used to switch the data being displayed
  * @param data - combination of csvData and jsonData
  */
-function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale, countrySVGs){
-    let btnLE = document.getElementById('LE');
+function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale, countrySVGs,leColor, bmiColor, gdpColor, incomeColor, schoolColor){
+   let scales = [leColor, bmiColor, gdpColor, incomeColor, schoolColor]
 
+    let btnLE = document.getElementById('LE');
     btnLE.onclick = function(){
         vis = 'life_expectancy';
         let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
         showData(countrySVGs, scale);
+        // scales.forEach(function(e){
+        //     showNumbers(countrySVGs, scale, e)
+        // })
+        let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
+
+        showNumbers(countrySVGs, scale, colorScale);
 
     }
 
@@ -277,7 +346,9 @@ function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScal
     btnBMI.onclick = function(){
         vis = 'bmi';
         let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+        let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
         showData(countrySVGs, scale);
+        showNumbers(countrySVGs, scale, colorScale);
 
     }
 
@@ -285,7 +356,9 @@ function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScal
     btnGDP.onclick = function(){
         vis = 'gdp';
         let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+        let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
         showData(countrySVGs, scale);
+        showNumbers(countrySVGs, scale, colorScale);
 
     }
 
@@ -293,7 +366,9 @@ function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScal
     btnIC.onclick = function(){
         vis = 'income_resources';
         let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+        let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
         showData(countrySVGs, scale);
+        showNumbers(countrySVGs, scale, colorScale);
 
     }
     
@@ -301,7 +376,9 @@ function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScal
     btnS.onclick = function(){
         vis = 'schooling';
         let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+        let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
         showData(countrySVGs, scale);
+        showNumbers(countrySVGs, scale, colorScale);
     }
 }
 
@@ -354,16 +431,39 @@ function translateCoding(vis){
 
 function calculatePercentiles(list){
     let n = list.length;
-    let percentile25index = 0.25 * n-1;
-    let percentile75index = 0.75 * n-1;
+    let percentile25index = 0.25 * n;
+    let percentile50index = 0.5 * n;
+    let percentile75index = 0.75 * n;
 
     let percentilesIndices = {
-        25: percentile25index,
-        75: percentile75index
+        25: Math.round(percentile25index+1),
+        50: Math.round(percentile50index+1),
+        75: Math.round(percentile75index+1)
     }
+
     
     return percentilesIndices;
 
+}
+
+/**
+ * Sorts the data based on values in the different columns
+ * @param data - array to sort
+ * @param comparisonAttr - which column is the sorting key
+ * @returns {this}
+ */
+function sortingVals(data, comparisonAttr){
+    sorted = [...data].sort(function(a,b) {
+        if (Number(a[comparisonAttr]) > Number(b[comparisonAttr])) {
+            return 1;
+        } else if (Number(a[comparisonAttr]) < Number(b[comparisonAttr])) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
+
+    return sorted;
 }
 
 

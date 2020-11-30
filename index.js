@@ -1,6 +1,8 @@
 
 // DEFAULT state
 let vis = 'life_expectancy';
+let sort = 'ALPH';
+let global_scale = null;
 
 function start(){
     Promise.all([d3.json('countries.json'), d3.csv('Life Expectancy Data fixed.csv')])
@@ -8,18 +10,21 @@ function start(){
 
             d3.selectAll('.country').remove();
 
-
-            //SET UP
-            //setDoubleScroll();
-
             //Combining jsonData and csvData
             let data = getCountryImageInfo(jsonData, csvData);
+            let data_to_send;
 
             let orderedLE = sortingVals(data, 'life_expectancy');
             let orderedBMI = sortingVals(data, 'bmi');
             let orderedGDP = sortingVals(data, 'gdp');
             let orderedIC = sortingVals(data, 'income_resources');
             let orderedS = sortingVals(data, 'schooling');
+
+            let orderedLED = sortingValsD(data, 'life_expectancy');
+            let orderedBMID = sortingValsD(data, 'bmi');
+            let orderedGDPD = sortingValsD(data, 'gdp');
+            let orderedICD = sortingValsD(data, 'income_resources');
+            let orderedSD = sortingValsD(data, 'schooling');
 
             let life_expect_arr = [];
             let bmi_arr = [];
@@ -41,10 +46,57 @@ function start(){
             let income_extent = d3.extent(income_arr);
             let schooling_extent = d3.extent(schooling_arr);
 
-            //console.log(life_extent, bmi_extent, gdp_extent, income_extent, schooling_extent);
+
+            if (sort === 'ALPH'){
+                data_to_send = data;
+            }
+
+            else if (sort === 'A'){
+                if (vis === 'life_expectancy'){
+                    data_to_send = orderedLE;
+                }
+
+                else if (vis === 'bmi'){
+                    data_to_send = orderedBMI;
+                }
+
+                else if (vis === 'gdp'){
+                    data_to_send = orderedGDP;
+                }
+
+                else if (vis === 'income_resources'){
+                    data_to_send = orderedIC;
+                }
+
+                else if (vis === 'schooling'){
+                    data_to_send = orderedS;
+                }
+            }
+
+            else if (sort === 'D'){
+                if (vis === 'life_expectancy'){
+                    data_to_send = orderedLED;
+                }
+
+                else if (vis === 'bmi'){
+                    data_to_send = orderedBMID;
+                }
+
+                else if (vis === 'gdp'){
+                    data_to_send = orderedGDPD;
+                }
+
+                else if (vis === 'income_resources'){
+                    data_to_send = orderedICD;
+                }
+
+                else if (vis === 'schooling'){
+                    data_to_send = orderedSD;
+                }
+            }
 
             //Data setup
-            let countryDivs = setUp(data);
+            let countryDivs = setUp(data_to_send);
             let start = document.querySelector('.countryDivs').clientWidth * 0.03;
             let end = document.querySelector('.countryDivs').clientWidth * 0.88;
 
@@ -52,27 +104,22 @@ function start(){
             let lifeScale = d3.scaleLinear()
                 .domain(life_extent)
                 .range([start,end])
-            //  .nice();
 
             let bmiScale = d3.scaleLinear()
                 .domain(bmi_extent)
                 .range([start,end])
-            //  .nice();
 
             let gdpScale = d3.scaleLinear()
                 .domain(gdp_extent)
                 .range([start,end])
-            // .nice();
 
             let incomeScale = d3.scaleLinear()
                 .domain(income_extent)
                 .range([start,end])
-            // .nice();
 
             let schoolScale = d3.scaleLinear()
                 .domain(schooling_extent)
                 .range([start,end])
-            //.nice();
 
             let lePercentiles = calculatePercentiles(orderedLE);
             let bmiPercentiles = calculatePercentiles(orderedBMI);
@@ -104,13 +151,12 @@ function start(){
 
             setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale, countrySVGs ,leColor, bmiColor, gdpColor, incomeColor, schoolColor);
 
-
-
         });
 }
 
 start();
 window.onresize = start;
+setOrderButtons();
 
 /**
  * Set up visualization container and the country names and lines within an svg tag.
@@ -196,15 +242,13 @@ function setSVGs(countryDivs, lifeScale, bmiScale, gdpScale, incomeScale, school
             return this.parentElement.clientHeight * 0.4;
         })
 
-    let scale = getScale(lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
-    let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
-    showData(countrySVGs, scale );
-    showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
-    showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
-    showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
-    showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
-    showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
-
+    global_scale = getScale(lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+    showData(countrySVGs,  global_scale);
+    showNumbers(countrySVGs,  global_scale, leColor,'life_expectancy',0);
+    showNumbers(countrySVGs,  global_scale, bmiColor,'bmi',1);
+    showNumbers(countrySVGs,  global_scale, gdpColor,'gdp',2);
+    showNumbers(countrySVGs,  global_scale, incomeColor, 'income_resources',3);
+    showNumbers(countrySVGs,  global_scale, schoolColor, 'schooling',4);
 
     return countrySVGs;
 }
@@ -236,7 +280,7 @@ function showNumbers(countrySVGs, scale, colorScale, selection, i){
 
 function showData(countrySVGs, scale){
     let info = document.querySelector('#info');
-    info.textContent = `Flags Ordered By: ${translateCoding(vis)}`;
+    info.textContent = `Line Scale Based On: ${translateCoding(vis)}`;
     countrySVGs.selectAll('image').remove();
     countrySVGs.selectAll('text').remove();
 
@@ -278,27 +322,6 @@ function getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale){
     }
 }
 
-function getColorScale( leColor, bmiColor, gdpColor, incomeColor, schoolColor){
-    if (vis === 'life_expectancy'){
-        return leColor;
-    }
-    else if (vis === 'bmi'){
-        return bmiColor;
-    }
-
-    else if (vis === 'gdp'){
-        return gdpColor;
-    }
-
-    else if (vis === 'income_resources'){
-        return incomeColor;
-    }
-
-    else if (vis === 'schooling'){
-        return schoolColor;
-    }
-}
-
 /**
  * Combines necessary data
  * @param jsonData - country names and official abbreviations
@@ -323,7 +346,26 @@ function getCountryImageInfo(jsonData, csvData){
 }
 
 
+function setOrderButtons(){
 
+    let btnALPH = document.getElementById('ALPH');
+    btnALPH.onclick = function(){
+        sort = 'ALPH';
+        start();
+    }
+
+    let btnA = document.getElementById('A');
+    btnA.onclick = function(){
+        sort = 'A';
+        start();
+    }
+
+    let btnD = document.getElementById('D');
+    btnD.onclick = function(){
+        sort = 'D';
+        start();
+    }
+}
 
 
 /**
@@ -331,79 +373,75 @@ function getCountryImageInfo(jsonData, csvData){
  * @param data - combination of csvData and jsonData
  */
 function setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale, countrySVGs,leColor, bmiColor, gdpColor, incomeColor, schoolColor){
-   let scales = [leColor, bmiColor, gdpColor, incomeColor, schoolColor]
 
     let btnLE = document.getElementById('LE');
     btnLE.onclick = function(){
         vis = 'life_expectancy';
-        let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
-        showData(countrySVGs, scale);
-        // scales.forEach(function(e){
-        //     showNumbers(countrySVGs, scale, e)
-        // })
-        let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
-
-        showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
-        showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
-        showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
-        showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
-        showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
+        global_scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+        start();
+        // showData(countrySVGs, scale);
+        //
+        // showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+        // showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+        // showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+        // showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+        // showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
 
     }
 
     let btnBMI = document.getElementById('BMI');
     btnBMI.onclick = function(){
         vis = 'bmi';
-        let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
-        let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
-        showData(countrySVGs, scale);
-        showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
-        showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
-        showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
-        showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
-        showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
+        global_scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+        start();
+        // showData(countrySVGs, scale);
+        // showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+        // showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+        // showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+        // showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+        // showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
 
     }
 
     let btnGDP = document.getElementById('GDP');
     btnGDP.onclick = function(){
         vis = 'gdp';
-        let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
-        let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
-        showData(countrySVGs, scale);
-        showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
-        showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
-        showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
-        showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
-        showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
+        global_scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+        start();
+        // showData(countrySVGs, scale);
+        // showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+        // showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+        // showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+        // showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+        // showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
 
     }
 
     let btnIC = document.getElementById('IC');
     btnIC.onclick = function(){
         vis = 'income_resources';
-        let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
-        let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
-        showData(countrySVGs, scale);
-        showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
-        showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
-        showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
-        showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
-        showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
+        global_scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+        start();
+        // showData(countrySVGs, scale);
+        // showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+        // showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+        // showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+        // showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+        // showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
 
     }
     
     let btnS = document.getElementById('S');
     btnS.onclick = function(){
         vis = 'schooling';
-        let scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
-        let colorScale = getColorScale(leColor, bmiColor, gdpColor, incomeColor, schoolColor);
-        showData(countrySVGs, scale);
-        showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
-        showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
-        showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
-        showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
-        showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
+        global_scale = getScale( lifeScale, bmiScale, gdpScale, incomeScale, schoolScale);
+        start();
+        // showData(countrySVGs, scale);
+        // showNumbers(countrySVGs, scale, leColor,'life_expectancy',0);
+        // showNumbers(countrySVGs, scale, bmiColor,'bmi',1);
+        // showNumbers(countrySVGs, scale, gdpColor,'gdp',2);
+        // showNumbers(countrySVGs, scale, incomeColor, 'income_resources',3);
+        // showNumbers(countrySVGs, scale, schoolColor, 'schooling',4);
     }
 }
 
@@ -483,6 +521,20 @@ function sortingVals(data, comparisonAttr){
             return 1;
         } else if (Number(a[comparisonAttr]) < Number(b[comparisonAttr])) {
             return -1;
+        } else {
+            return 0;
+        }
+    });
+
+    return sorted;
+}
+
+function sortingValsD(data, comparisonAttr){
+    sorted = [...data].sort(function(a,b) {
+        if (Number(a[comparisonAttr]) > Number(b[comparisonAttr])) {
+            return -1;
+        } else if (Number(a[comparisonAttr]) < Number(b[comparisonAttr])) {
+            return 1;
         } else {
             return 0;
         }

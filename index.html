@@ -3,9 +3,13 @@
 <head>
 	<meta charset="UTF-8">
 	<title>VisTwo: ListVis</title>
+
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<link rel="stylesheet" href="index.css">
 	<script src="https://unpkg.com/d3@5.6.0/dist/d3.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js"></script>
 </head>
 <body>
 
@@ -47,92 +51,109 @@
 		</div>
 
 		<div class="row">
-			<h3 id = "info"></h3>
-			<h4 style="text-align:center;"> The left edge of every flag represents the position of the value. The numbers are shown in the following order [Life Expectancy, BMI, GDP, Income Composition of Resources, Schooling].The ticks on the left side of the line show the position of the lowest value, and the ticks on the right side show the position of the highest value.</h4>
-			<div id = "legend" class = "container">
-				<div class = "row">
-					<h5 class = "col-xs-2" style="font-weight:bold;">Legend</h5>
-					<h5  class = "col-xs-2"  style="font-weight:bold;">Value is between 0-24% of all others</h5>
-					<h5  class = "col-xs-2"  style="font-weight:bold;">Value is between 25-49% of all others</h5>
-					<h5  class = "col-xs-2" style="font-weight:bold;">Value is between 50-74% of all others</h5>
-					<h5  class = "col-xs-2" style="font-weight:bold;">Value is between 75-100% of all others</h5>
-				</div>
-				<div class = "row">
-					<div class = "col-xs-2 legendLabel" id = "legendLE">Life Expectancy</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#00ceff; width:2em; height:2em"></div>
+			<div class = "col-xs-12">
+				<h3 id = "info"></h3>
+				<h4 style="text-align:center;"> The left edge of every flag represents the position of the value. The numbers are shown in the following order [Life Expectancy, BMI, GDP, Income Composition of Resources, Schooling].The ticks on the left side of the line show the position of the lowest value, and the ticks on the right side show the position of the highest value.</h4>
+
+				<div id = "legend" >
+					<div class = "row">
+						<h5 class = "col-xs-2" style="font-weight:bold;">Legend</h5>
+						<h5  class = "col-xs-2"  style="font-weight:bold;">Value is between 0-24% of all others</h5>
+						<h5  class = "col-xs-2"  style="font-weight:bold;">Value is between 25-49% of all others</h5>
+						<h5  class = "col-xs-2" style="font-weight:bold;">Value is between 50-74% of all others</h5>
+						<h5  class = "col-xs-2" style="font-weight:bold;">Value is between 75-100% of all others</h5>
+
 					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#07a0ce; width:2em; height:2em"></div>
+
+					<div class = "row">
+						<div class = "col-xs-2 legendLabel" id = "legendLE">Life Expectancy</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#00ceff; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#07a0ce; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#06749d; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#004c6d; width:2em; height:2em"></div>
+						</div>
+
+
 					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#06749d; width:2em; height:2em"></div>
+					<div class = "row">
+						<div class = "col-xs-2 legendLabel"  id = "legendBMI">BMI</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#ff7aff; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#cd55c9; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#9c3196; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#6d0967; width:2em; height:2em"></div>
+						</div>
 					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#004c6d; width:2em; height:2em"></div>
+					<div class = "row">
+						<div class = "col-xs-2 legendLabel"  id = "legendGDP">GDP</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#5cd135; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#4bae2a; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#3b8d1f; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#2b6d15; width:2em; height:2em"></div>
+						</div>
 					</div>
-				</div>
-				<div class = "row">
-					<div class = "col-xs-2 legendLabel"  id = "legendBMI">BMI</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#ff7aff; width:2em; height:2em"></div>
+					<div class = "row">
+						<div class = "col-xs-2 legendLabel"  id = "legendIC">Income Composition of Resources</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#ff785c; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#cc543e; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#9c3223; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#6d0d07; width:2em; height:2em"></div>
+						</div>
 					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#cd55c9; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#9c3196; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#6d0967; width:2em; height:2em"></div>
-					</div>
-				</div>
-				<div class = "row">
-					<div class = "col-xs-2 legendLabel"  id = "legendGDP">GDP</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#5cd135; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#4bae2a; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#3b8d1f; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#2b6d15; width:2em; height:2em"></div>
-					</div>
-				</div>
-				<div class = "row">
-					<div class = "col-xs-2 legendLabel"  id = "legendIC">Income Composition of Resources</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#ff785c; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#cc543e; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#9c3223; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#6d0d07; width:2em; height:2em"></div>
-					</div>
-				</div>
-				<div class = "row">
-					<div class = "col-xs-2 legendLabel"  id = "legendS">Schooling</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#c2be00; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#a5a01d; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#898427; width:2em; height:2em"></div>
-					</div>
-					<div class = "col-xs-2">
-						<div style="background-color:#6d682b; width:2em; height:2em"></div>
+					<div class = "row">
+						<div class = "col-xs-2 legendLabel"  id = "legendS">Schooling</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#c2be00; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#a5a01d; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#898427; width:2em; height:2em"></div>
+						</div>
+						<div class = "col-xs-2">
+							<div style="background-color:#6d682b; width:2em; height:2em"></div>
+						</div>
+
+
+
 					</div>
 				</div>
 			</div>
+<!--			<div id = "scatter" class = "col-xs-4">-->
+<!--				<h4>Scatter Plot of Life Expectancy vs </h4>-->
+<!--				<svg>-->
+
+<!--				</svg>-->
+<!--			</div>-->
+
 		</div>
 
 		<div class = "row d-flex" id="sort_row" >
@@ -151,6 +172,12 @@
 				<button id = "A" class = "btn btn-secondary btn-sm">Ascending</button>
 			</div>
 
+			<div class = "col-xs-1">
+				<span>Filter: </span>
+				<select class="selectpicker" multiple data-live-search="true" id ="dropDown" data-selected-text-format="count" data-size="5" data-actions-box="true">
+				</select>
+			</div>
+
 		</div>
 
 
@@ -158,22 +185,15 @@
 <!--		<div id = "country_names" class = "container"></div>-->
 		<div id = "visual_container" class = "container"></div>
 
-<!--		<div id = "wrapper_upper">-->
-<!--			<div id = "upper_scroll"></div>-->
-<!--		</div>-->
-
-<!--		<div id = "wrapper_lower">-->
-<!--			<div id = "visual_container" class = "container"></div>-->
-<!--		</div>-->
-
-
 
 	</div>
 
 
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
 	<script src="index.js"></script>
 </body>
 </html>

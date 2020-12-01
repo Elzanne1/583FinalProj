@@ -3,15 +3,30 @@
 let vis = 'life_expectancy';
 let sort = 'ALPH';
 let global_scale = null;
+let selectVals = [];
+
+Promise.all([d3.csv('Life Expectancy Data fixed.csv')]).then(([temp])=>{
+    let out = '';
+    temp.forEach(function(d){
+        out += `<option selected="true">${d['Country'].trim()}</option>`
+    });
+    $('#dropDown').html(out).selectpicker('refresh');
+});
 
 function start(){
     Promise.all([d3.json('countries.json'), d3.csv('Life Expectancy Data fixed.csv')])
         .then(([jsonData, csvData]) => {
 
+
             d3.selectAll('.country').remove();
 
             //Combining jsonData and csvData
             let data = getCountryImageInfo(jsonData, csvData);
+
+            selectVals = $('.selectpicker').val();
+
+            let filteredData = filter(data);
+
             let data_to_send;
 
             let orderedLE = sortingVals(data, 'life_expectancy');
@@ -47,51 +62,52 @@ function start(){
             let schooling_extent = d3.extent(schooling_arr);
 
 
+
             if (sort === 'ALPH'){
-                data_to_send = data;
+                data_to_send = filteredData;
             }
 
             else if (sort === 'A'){
                 if (vis === 'life_expectancy'){
-                    data_to_send = orderedLE;
+                    data_to_send = filter(orderedLE);
                 }
 
                 else if (vis === 'bmi'){
-                    data_to_send = orderedBMI;
+                    data_to_send = filter(orderedBMI);
                 }
 
                 else if (vis === 'gdp'){
-                    data_to_send = orderedGDP;
+                    data_to_send = filter(orderedGDP);
                 }
 
                 else if (vis === 'income_resources'){
-                    data_to_send = orderedIC;
+                    data_to_send = filter(orderedIC);
                 }
 
                 else if (vis === 'schooling'){
-                    data_to_send = orderedS;
+                    data_to_send = filter(orderedS);
                 }
             }
 
             else if (sort === 'D'){
                 if (vis === 'life_expectancy'){
-                    data_to_send = orderedLED;
+                    data_to_send = filter(orderedLED);
                 }
 
                 else if (vis === 'bmi'){
-                    data_to_send = orderedBMID;
+                    data_to_send = filter(orderedBMID);
                 }
 
                 else if (vis === 'gdp'){
-                    data_to_send = orderedGDPD;
+                    data_to_send = filter(orderedGDPD);
                 }
 
                 else if (vis === 'income_resources'){
-                    data_to_send = orderedICD;
+                    data_to_send = filter(orderedICD);
                 }
 
                 else if (vis === 'schooling'){
-                    data_to_send = orderedSD;
+                    data_to_send = filter(orderedSD);
                 }
             }
 
@@ -151,12 +167,33 @@ function start(){
 
             setButtons(data, lifeScale, bmiScale, gdpScale, incomeScale, schoolScale, countrySVGs ,leColor, bmiColor, gdpColor, incomeColor, schoolColor);
 
+        })
+        .catch(e=>{
+
         });
 }
 
 start();
 window.onresize = start;
 setOrderButtons();
+setView();
+
+function setView(){
+    $('.selectpicker').change(function(){
+        start();
+    })
+}
+
+function filter(arr){
+    let temp = [];
+    arr.forEach(function(d){
+        if (selectVals.includes(d['name'])){
+            temp.push(d);
+        }
+    });
+    return temp;
+}
+
 
 /**
  * Set up visualization container and the country names and lines within an svg tag.
@@ -258,6 +295,14 @@ function showNumbers(countrySVGs, scale, colorScale, selection, i){
         .append('text')
         .attr('fill', function(d){
             return colorScale(d[selection]);
+        })
+        .attr('stroke',function(d){
+            if (selection === vis){
+                return 'black';
+            }
+        })
+        .attr('stroke-width', function(){
+            return document.querySelector('.countryDivs').clientWidth * 0.0003;
         })
         .attr('y', function(){
             return document.querySelector('.countryDivs').clientWidth * 0.025;

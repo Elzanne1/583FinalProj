@@ -1,7 +1,6 @@
 
 body{
     background-color:lightgray;
-    /*//overflow-y: auto;*/
     width: 100%;
     height: 100%;
 }
@@ -42,7 +41,8 @@ h4{
 }
 
 #sort_row{
-    padding-top:6%;
+    padding-top:2%;
+    padding-bottom:2%;
 }
 
 .legendLabel{
@@ -50,22 +50,15 @@ h4{
     padding-bottom:0.5%;
 }
 
-/*#vis_container{*/
-/*    padding-top: 2%;*/
-/*    width: 300%;*/
-/*    height: 100%;*/
-/*    overflow:auto;*/
-/*}*/
 
 h1,h2{
     text-align:center;
 }
 
-/*span{*/
-/*    padding-top:5%;*/
-/*    padding-bottom:0px;*/
+#scatter{
+    padding-top:3%;
+}
 
-/*}*/
 
 #country_names{
     display: inline-block;
@@ -81,14 +74,8 @@ h1,h2{
     width: 100%;
 }
 
-#ALPH{
-
-}
 
 .LABEL{
-    /*padding-top:5%;*/
-    /*padding-bottom:5%;*/
-    /*padding-right: 1%;*/
     overflow: hidden;
 }
 
@@ -96,65 +83,17 @@ h1,h2{
     padding-top:1.198%;
     padding-bottom:1.198%;
     position:relative;
-    /*padding-right: 1%;*/
 
 }
 
 .countrySVGs{
     position:absolute;
     left:0; top:0; width:100%; height:100%
-    /*padding-top:5%;*/
-    /*padding-bottom:5%;*/
-    /*viewBox: 0 0 50 200;*/
 }
 
 .country{
     padding-top:0.15%;
     padding-bottom:0.15%;
-}
-
-
-
-
-
-/*#plus{*/
-/*    float:right;*/
-/*    padding-right:2%;*/
-/*    color: green;*/
-/*    font-size: 2em;*/
-/*}*/
-
-/*#minus{*/
-/*    float:left;*/
-/*    padding-left: 2%;*/
-/*    color: red;*/
-/*    font-size:2em;*/
-
-/*}*/
-
-/*#legend{*/
-/*    width:100%;*/
-/*    height:200px;*/
-/*    text-align:left;*/
-/*    clear:both;*/
-/*    font-weight:bold;*/
-/*    padding:0px;*/
-/*}*/
-
-#red{
-    fill:red;
-}
-
-#yellow{
-    fill:#bdba31;
-}
-
-#green{
-    fill:green;
-}
-
-circle{
-    padding:0;
 }
 
 

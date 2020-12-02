@@ -1,3 +1,5 @@
+// All flag SVGs are from http://hjnilsson.github.io/country-flags/
+
 
 // DEFAULT state
 let vis = 'life_expectancy';
